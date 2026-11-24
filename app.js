@@ -32,15 +32,36 @@ async function loadStatus() {
   }
 }
 
-document.querySelectorAll('.webcam').forEach((video) => {
+function playWebcam(video) {
+  video.play().catch(() => {});
+}
+
+function initialiseWebcam(video) {
   const source = video.dataset.stream;
-  if (video.canPlayType('application/vnd.apple.mpegurl')) video.src = source;
-  else if (window.Hls?.isSupported()) {
+  video.addEventListener('canplay', () => playWebcam(video));
+
+  if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    video.src = source;
+    video.load();
+    playWebcam(video);
+  } else if (window.Hls?.isSupported()) {
     const hls = new Hls({ lowLatencyMode: true });
     hls.loadSource(source);
     hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED, () => playWebcam(video));
+    hls.on(Hls.Events.ERROR, (_, data) => {
+      if (!data.fatal) return;
+      if (data.type === Hls.ErrorTypes.NETWORK_ERROR) hls.startLoad();
+      else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) hls.recoverMediaError();
+      else {
+        hls.destroy();
+        setTimeout(() => initialiseWebcam(video), 2_000);
+      }
+    });
   }
-});
+}
+
+document.querySelectorAll('.webcam').forEach(initialiseWebcam);
 
 surfButtons.forEach((button) => button.addEventListener('click', () => setSurfForecast(button.dataset.surfMode)));
 
