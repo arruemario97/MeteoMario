@@ -5,6 +5,11 @@ async function loadStatus() {
     const response = await fetch('assets/captures/status.json', { cache: 'no-store' });
     const { updatedAt } = await response.json();
     status.textContent = `Actualizado: ${new Intl.DateTimeFormat('es-ES', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(updatedAt))}`;
+    document.querySelectorAll('.capture-card img').forEach((image) => {
+      const url = new URL(image.getAttribute('src'), window.location.href);
+      url.searchParams.set('updated', new Date(updatedAt).getTime());
+      image.src = url.toString();
+    });
   } catch {
     status.textContent = 'Pendiente de la primera actualización';
   }
