@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#061c2e" />
+    <title>Donostia · Condiciones de mar</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="dashboard">
+      <header class="hero">
+        <p class="eyebrow">DONOSTIA · SAN SEBASTIÁN</p>
+        <h1>Condiciones de mar</h1>
+        <p class="updated" id="dashboard-updated">Cargando última actualización…</p>
+      </header>
+
+      <section aria-labelledby="webcams-title">
+        <div class="section-heading">
+          <h2 id="webcams-title">Webcams en directo</h2>
+          <span class="live"><i></i> EN DIRECTO</span>
+        </div>
+        <div class="webcam-grid">
+          <article class="webcam-card">
+            <h3>Ondarreta</h3>
+            <video class="webcam" controls muted playsinline data-stream="https://58f14c0895a20.streamlock.net/camaramar/GIP_ondarreta_169.stream/playlist.m3u8"></video>
+          </article>
+          <article class="webcam-card">
+            <h3>Zurriola</h3>
+            <video class="webcam" controls muted playsinline data-stream="https://58f14c0895a20.streamlock.net/camaramar/GIP_zurriola_169.stream/playlist.m3u8"></video>
+          </article>
+        </div>
+      </section>
+
+      <section aria-labelledby="mareas-title">
+        <div class="section-heading"><h2 id="mareas-title">Mareas</h2><span>San Sebastián</span></div>
+        <div class="capture-grid capture-grid--tides">
+          <article class="capture-card"><img src="assets/captures/tide-status.png" alt="Estado actual de la marea" /></article>
+          <article class="capture-card capture-card--wide"><img src="assets/captures/tide-chart.png" alt="Gráfica diaria de mareas" /></article>
+          <article class="capture-card capture-card--wide"><img src="assets/captures/tide-coefficient.png" alt="Coeficiente de mareas" /></article>
+        </div>
+      </section>
+
+      <section aria-labelledby="windguru-title">
+        <div class="section-heading"><h2 id="windguru-title">Viento y mar</h2><span>Windguru · Zurriola</span></div>
+        <article class="capture-card capture-card--scroll"><img src="assets/captures/windguru.png" alt="Previsión de viento, olas y mareas de Windguru" /></article>
+      </section>
+
+      <section aria-labelledby="surf-title">
+        <div class="section-heading"><h2 id="surf-title">Previsión de surf</h2><span>Zurriola</span></div>
+        <article class="capture-card capture-card--scroll"><img src="assets/captures/surf-forecast.png" alt="Previsión horaria de surf de Zurriola" /></article>
+      </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
