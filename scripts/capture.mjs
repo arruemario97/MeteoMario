@@ -113,10 +113,11 @@ try {
   await capture('#l_grafico_mareas >> xpath=..', 'tide-chart.png');
   await captureLocator(page.locator('.grafico_estado_actual_fondo').filter({ hasText: 'coeficiente de mareas' }).first(), 'tide-coefficient.png');
 
-  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.setViewportSize({ width: 3300, height: 1200 });
   await open('https://www.windguru.cz/48687');
-  await captureFixed('windguru.png', 180, 405);
+  await capture('#tabid_0_content_div', 'windguru.png');
 
+  await page.setViewportSize({ width: 1600, height: 1000 });
   await open('https://es.surf-forecast.com/breaks/Zurriola-hondartza/forecasts/latest');
   await captureTableRange('.forecast-table-days__container', '.forecast-table__table--content', 'surf-forecast.png', 540);
 

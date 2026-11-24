@@ -22,5 +22,5 @@ h3 { font-size: 1rem; margin: 0 0 10px; }
 .capture-card img { display: block; max-width: none; width: 100%; height: auto; }
 .capture-card--wide { grid-column: 1 / -1; }
 .capture-card--scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.capture-card--scroll img { min-width: 1000px; width: 1000px; }
+.capture-card--scroll img { min-width: 100%; width: auto; }
 @media (max-width: 620px) { .dashboard { padding-inline: 12px; } .webcam-grid { grid-template-columns: 1fr; } .capture-grid--tides { grid-template-columns: 1fr; } .capture-grid--tides .capture-card:first-child { max-width: 390px; } }

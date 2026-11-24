@@ -3,7 +3,7 @@ name: Actualizar condiciones de mar
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 * * * *'
+    - cron: '*/15 * * * *'
 
 permissions:
   contents: write
