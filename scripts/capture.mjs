@@ -9,7 +9,18 @@ await page.route('**://cmp.inmobi.com/**', (route) => route.abort());
 await page.route('**://securityannex.net/**', (route) => route.abort());
 
 async function open(url) {
-  await page.goto(url, { waitUntil: 'commit', timeout: 20_000 });
+  let lastError;
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      await page.goto(url, { waitUntil: 'commit', timeout: 45_000 });
+      lastError = null;
+      break;
+    } catch (error) {
+      lastError = error;
+      await page.waitForTimeout(attempt * 1_000);
+    }
+  }
+  if (lastError) throw lastError;
   await page.waitForTimeout(5_000);
   await page.waitForTimeout(1_000);
 }
@@ -119,7 +130,10 @@ try {
 
   await page.setViewportSize({ width: 1600, height: 1000 });
   await open('https://es.surf-forecast.com/breaks/Zurriola-hondartza/forecasts/latest');
-  await captureTableRange('.forecast-table-days__container', '.forecast-table__table--content', 'surf-forecast.png', 540);
+  await captureTableRange('.forecast-table-days__container', '.forecast-table__table--content', 'surf-hourly.png', 570);
+
+  await open('https://es.surf-forecast.com/breaks/Zurriola-hondartza/forecasts/latest/six_day');
+  await captureTableRange('.forecast-table-days__container', '.forecast-table__table--content', 'surf-six-day.png', 570);
 
   await writeFile(`${captures}/status.json`, JSON.stringify({ updatedAt: new Date().toISOString() }));
 } finally {

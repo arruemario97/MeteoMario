@@ -1,13 +1,14 @@
 :root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; background: #061c2e; color: #e9f6ff; }
 * { box-sizing: border-box; }
-body { margin: 0; }
-.dashboard { width: min(100%, 1120px); margin: auto; padding: 24px 16px 48px; }
+body { margin: 0; min-height: 100vh; background: #061c2e url('assets/meteomario-mosaic.png') repeat; background-size: 124px 124px; background-blend-mode: soft-light; }
+.dashboard { width: min(100%, 1120px); min-height: 100vh; margin: auto; padding: 24px 16px 48px; background: linear-gradient(180deg, #061c2ee8 0%, #061c2ef5 100%); backdrop-filter: blur(2px); }
 .hero { margin: 8px 0 32px; }
 .eyebrow { color: #72d2ff; font-size: .75rem; font-weight: 800; letter-spacing: .12em; margin: 0 0 7px; }
 h1 { font-size: clamp(2rem, 8vw, 3.2rem); margin: 0; letter-spacing: -.04em; }
 .updated, .section-heading span { color: #9cb4c5; font-size: .875rem; }
 section { margin-top: 34px; }
 .section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 2px 12px; }
+.section-heading--surf { align-items: center; }
 h2 { font-size: 1.25rem; margin: 0; letter-spacing: -.02em; }
 h3 { font-size: 1rem; margin: 0 0 10px; }
 .live { color: #ff8e8e; font-size: .75rem; font-weight: 800; letter-spacing: .07em; white-space: nowrap; }
@@ -23,4 +24,7 @@ h3 { font-size: 1rem; margin: 0 0 10px; }
 .capture-card--wide { grid-column: 1 / -1; }
 .capture-card--scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .capture-card--scroll img { min-width: 100%; width: auto; }
-@media (max-width: 620px) { .dashboard { padding-inline: 12px; } .webcam-grid { grid-template-columns: 1fr; } .capture-grid--tides { grid-template-columns: 1fr; } .capture-grid--tides .capture-card:first-child { max-width: 390px; } }
+.surf-switch { display: inline-flex; padding: 3px; border-radius: 999px; background: #e9eef3; box-shadow: inset 0 1px 2px #0002; white-space: nowrap; }
+.surf-switch button { appearance: none; border: 0; border-radius: 999px; padding: 8px 14px; background: transparent; color: #4d6380; font: inherit; font-size: .875rem; cursor: pointer; }
+.surf-switch button.is-active { background: #fff; color: #315fc5; box-shadow: 0 1px 3px #0003; }
+@media (max-width: 620px) { .dashboard { padding-inline: 12px; } .webcam-grid { grid-template-columns: 1fr; } .capture-grid--tides { grid-template-columns: 1fr; } .capture-grid--tides .capture-card:first-child { max-width: 390px; } .section-heading--surf { align-items: flex-start; flex-direction: column; } }

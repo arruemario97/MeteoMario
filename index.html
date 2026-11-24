@@ -10,8 +10,8 @@
   <body>
     <main class="dashboard">
       <header class="hero">
-        <p class="eyebrow">DONOSTIA · SAN SEBASTIÁN</p>
-        <h1>Condiciones de mar</h1>
+        <p class="eyebrow">DONOSTIA · MAR Y SURF</p>
+        <h1>MeteoMario</h1>
         <p class="updated" id="dashboard-updated">Cargando última actualización…</p>
       </header>
 
@@ -47,8 +47,14 @@
       </section>
 
       <section aria-labelledby="surf-title">
-        <div class="section-heading"><h2 id="surf-title">Previsión de surf</h2><span>Zurriola</span></div>
-        <article class="capture-card capture-card--scroll"><img src="assets/captures/surf-forecast.png" alt="Previsión horaria de surf de Zurriola" /></article>
+        <div class="section-heading section-heading--surf">
+          <div><h2 id="surf-title">Previsión de surf</h2><span>Zurriola</span></div>
+          <div class="surf-switch" role="group" aria-label="Tipo de previsión de surf">
+            <button type="button" data-surf-mode="sixDay">16 Días</button>
+            <button type="button" data-surf-mode="hourly" class="is-active">Cada hora</button>
+          </div>
+        </div>
+        <article class="capture-card capture-card--scroll"><img id="surf-forecast-image" src="assets/captures/surf-hourly.png" data-hourly="assets/captures/surf-hourly.png" data-six-day="assets/captures/surf-six-day.png" alt="Previsión horaria de surf de Zurriola" /></article>
       </section>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
