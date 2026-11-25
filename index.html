@@ -1,27 +1,30 @@
 <!doctype html>
-<html lang="es">
+<html lang="eu">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#061c2e" />
-    <title>Donostia · Condiciones de mar</title>
+    <title>MeteoMario · Itsas iragarpena</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/meteomario-icon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/meteomario-icon-180.png" />
     <link rel="stylesheet" href="styles.css?v=avatar-80" />
   </head>
   <body>
     <main class="dashboard">
       <header class="hero">
-        <p class="eyebrow">DONOSTIA · MAR Y SURF</p>
+        <p class="eyebrow">DONOSTIA · ITSASOA ETA SURFA</p>
         <div class="brand-title">
           <h1>MeteoMario</h1>
-          <img src="assets/meteomario-mosaic.png" alt="MeteoMario saludando" />
+          <img src="assets/meteomario-mosaic.png" alt="" />
         </div>
-        <p class="updated" id="dashboard-updated">Cargando última actualización…</p>
+        <p class="updated" id="dashboard-updated">Azken eguneratzea kargatzen…</p>
       </header>
 
       <section aria-labelledby="webcams-title">
         <div class="section-heading">
-          <h2 id="webcams-title">Webcams en directo</h2>
-          <span class="live"><i></i> EN DIRECTO</span>
+          <h2 id="webcams-title">Zuzeneko kamerak</h2>
+          <span class="live"><i></i> ZUZENEAN</span>
         </div>
         <div class="webcam-grid">
           <article class="webcam-card">
@@ -36,31 +39,31 @@
       </section>
 
       <section aria-labelledby="mareas-title">
-        <div class="section-heading"><h2 id="mareas-title">Mareas</h2><span>San Sebastián</span></div>
+        <div class="section-heading"><h2 id="mareas-title">Mareak</h2><span>Donostia</span></div>
         <div class="capture-grid capture-grid--tides">
-          <article class="capture-card"><img src="assets/captures/tide-status.png" alt="Estado actual de la marea" /></article>
-          <article class="capture-card capture-card--wide"><img src="assets/captures/tide-chart.png" alt="Gráfica diaria de mareas" /></article>
-          <article class="capture-card capture-card--wide"><img src="assets/captures/tide-coefficient.png" alt="Coeficiente de mareas" /></article>
+          <article class="capture-card"><img src="assets/captures/tide-status.png" alt="Marearen uneko egoera" /></article>
+          <article class="capture-card capture-card--wide"><img src="assets/captures/tide-chart.png" alt="Eguneko mareen grafikoa" /></article>
+          <article class="capture-card capture-card--wide"><img src="assets/captures/tide-coefficient.png" alt="Marea-koefizientea" /></article>
         </div>
       </section>
 
       <section aria-labelledby="windguru-title">
-        <div class="section-heading"><h2 id="windguru-title">Viento y mar</h2><span>Windguru · Zurriola</span></div>
-        <article class="capture-card capture-card--scroll"><img src="assets/captures/windguru.png" alt="Previsión de viento, olas y mareas de Windguru" /></article>
+        <div class="section-heading"><h2 id="windguru-title">Haizea eta itsasoa</h2><span>Windguru · Zurriola</span></div>
+        <article class="capture-card capture-card--scroll"><img src="assets/captures/windguru.png" alt="Windgururen haizearen, olatuen eta mareen iragarpena" /></article>
       </section>
 
       <section aria-labelledby="surf-title">
         <div class="section-heading section-heading--surf">
-          <div><h2 id="surf-title">Previsión de surf</h2><span>Zurriola</span></div>
-          <div class="surf-switch" role="group" aria-label="Tipo de previsión de surf">
-            <button type="button" data-surf-mode="sixDay">16 Días</button>
-            <button type="button" data-surf-mode="hourly" class="is-active">Cada hora</button>
+          <div><h2 id="surf-title">Surf-iragarpena</h2><span>Zurriola</span></div>
+          <div class="surf-switch" role="group" aria-label="Surf-iragarpen mota">
+            <button type="button" data-surf-mode="sixDay" aria-pressed="false">16 egun</button>
+            <button type="button" data-surf-mode="hourly" aria-pressed="true" class="is-active">Orduro</button>
           </div>
         </div>
-        <article class="capture-card capture-card--scroll"><img id="surf-forecast-image" src="assets/captures/surf-hourly.png" data-hourly="assets/captures/surf-hourly.png" data-six-day="assets/captures/surf-six-day.png" alt="Previsión horaria de surf de Zurriola" /></article>
+        <article class="capture-card capture-card--scroll"><img id="surf-forecast-image" src="assets/captures/surf-hourly.png" data-hourly="assets/captures/surf-hourly.png" data-six-day="assets/captures/surf-six-day.png" alt="Zurriolako orduz orduko surf-iragarpena" /></article>
       </section>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
-    <script src="app.js?v=webcam-retry"></script>
+    <script src="app.js?v=eu"></script>
   </body>
 </html>

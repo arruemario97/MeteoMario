@@ -84,14 +84,73 @@ async function captureFrom(selector, filename, height) {
   });
 }
 
-async function captureTableRange(startSelector, tableSelector, filename, height) {
-  const start = page.locator(startSelector).first();
-  const table = page.locator(tableSelector).first();
+async function captureSurfForecast(url, filename) {
+  await open(url);
+  const table = page.locator('.forecast-table__table--content').first();
+  const unitsButton = table.locator('.switch-units--table');
+  await unitsButton.click();
+  const metric = page.locator('input[name="units"][value="Metric"]:visible');
+  await metric.waitFor({ state: 'visible' });
+  if (!(await metric.isChecked())) await metric.locator('xpath=..').click();
+  if (await metric.isVisible()) await unitsButton.click();
+  await metric.waitFor({ state: 'hidden' });
+
+  // In its metric preset Surf-Forecast still renders wave and tide heights in metres.
+  await table.evaluate((element) => {
+    const swellUnits = element.querySelectorAll('.forecast-table__header-container--swell .heightu');
+    const wind = element.querySelector('.forecast-table__header-container--wind');
+    if (!swellUnits.length || swellUnits[0].textContent.trim() !== 'm' || !wind?.textContent.includes('km/h')) {
+      throw new Error('Surf-Forecast did not switch to the metric preset');
+    }
+
+    const toCentimetres = (height) => {
+      const metres = height.textContent.trim().replace(',', '.');
+      if (/^-?\d+(?:\.\d+)?$/.test(metres)) {
+        height.textContent = String(Math.round(Number(metres) * 100));
+      }
+    };
+
+    element.querySelectorAll('.swell-icon__val').forEach(toCentimetres);
+    swellUnits.forEach((unit) => { unit.textContent = 'cm'; });
+    element.querySelectorAll('.tide-time').forEach((tide) => {
+      const height = tide.querySelector('.tide-time__height');
+      const unit = tide.querySelector('.tide-time__units');
+      if (height && unit?.textContent.trim() === 'm') {
+        toCentimetres(height);
+        unit.textContent = ' cm';
+      }
+    });
+
+    // Match the existing graph ticks and express their labels in centimetres.
+    const scale = element.querySelector('.forecast-table__scale');
+    if (scale) {
+      const ticks = [[2, 1000], [23, 500], [35, 300], [43, 200], [52, 100], [75, 0]];
+      const marks = ticks.map(([y]) => `M27 ${y}H32`).join(' ');
+      const labels = ticks.map(([y, cm]) => {
+        const baseline = Math.max(7, Math.min(75, y + 2));
+        return `<text x="25" y="${baseline}">${cm}</text>`;
+      }).join('');
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 76">
+        <path d="M31 2V75 ${marks}" fill="none" stroke="#111"/>
+        <g fill="#111" font-family="sans-serif" font-size="8" text-anchor="end">${labels}</g>
+      </svg>`;
+      scale.src = 'data:image/svg+xml,' + encodeURIComponent(svg);
+      scale.alt = 'Escala de olas en centímetros';
+    }
+  });
+
+  const start = table.locator('.forecast-table-days__container').first();
+  const lowTideRow = table.locator('.forecast-table__header-container--low-tide').locator('xpath=ancestor::tr');
   await start.evaluate((element) => element.scrollIntoView({ block: 'center' }));
-  await page.waitForTimeout(250);
+  await table.locator('.forecast-table__scale').evaluate((image) => image.decode());
   const startBox = await start.boundingBox();
   const tableBox = await table.boundingBox();
-  if (!startBox || !tableBox) throw new Error('No se pudo localizar la tabla de Surf-Forecast');
+  const tideBox = await lowTideRow.boundingBox();
+  if (!startBox || !tableBox || !tideBox) throw new Error('No se pudo localizar la tabla de Surf-Forecast');
+  const height = Math.ceil(tideBox.y + tideBox.height + 1 - startBox.y);
+  if (startBox.y + height > page.viewportSize().height) {
+    throw new Error('La fila de marea baja queda fuera de la captura de Surf-Forecast');
+  }
   await page.screenshot({
     path: `${captures}/${filename}`,
     clip: { x: tableBox.x, y: startBox.y, width: tableBox.width, height },
@@ -128,12 +187,10 @@ try {
   await open('https://www.windguru.cz/48687');
   await capture('#tabid_0_content_div', 'windguru.png');
 
-  await page.setViewportSize({ width: 1600, height: 1000 });
-  await open('https://es.surf-forecast.com/breaks/Zurriola-hondartza/forecasts/latest');
-  await captureTableRange('.forecast-table-days__container', '.forecast-table__table--content', 'surf-hourly.png', 570);
-
-  await open('https://es.surf-forecast.com/breaks/Zurriola-hondartza/forecasts/latest/six_day');
-  await captureTableRange('.forecast-table-days__container', '.forecast-table__table--content', 'surf-six-day.png', 570);
+  await page.setViewportSize({ width: 1600, height: 1280 });
+  const surfForecast = 'https://es.surf-forecast.com/breaks/Zurriola-hondartza/forecasts/latest';
+  await captureSurfForecast(surfForecast, 'surf-hourly.png');
+  await captureSurfForecast(`${surfForecast}/six_day`, 'surf-six-day.png');
 
   await writeFile(`${captures}/status.json`, JSON.stringify({ updatedAt: new Date().toISOString() }));
 } finally {

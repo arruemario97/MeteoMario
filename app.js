@@ -13,22 +13,31 @@ function setSurfForecast(mode) {
   if (!surfImage) return;
   const source = mode === 'sixDay' ? surfImage.dataset.sixDay : surfImage.dataset.hourly;
   surfImage.src = versionedUrl(source);
-  surfImage.alt = mode === 'sixDay' ? 'Previsión de surf de 16 días de Zurriola' : 'Previsión horaria de surf de Zurriola';
-  surfButtons.forEach((button) => button.classList.toggle('is-active', button.dataset.surfMode === mode));
+  surfImage.alt = mode === 'sixDay' ? 'Zurriolako 16 eguneko surf-iragarpena' : 'Zurriolako orduz orduko surf-iragarpena';
+  surfButtons.forEach((button) => {
+    const active = button.dataset.surfMode === mode;
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
 }
 
 async function loadStatus() {
   try {
     const response = await fetch('assets/captures/status.json', { cache: 'no-store' });
     const { updatedAt } = await response.json();
-    captureVersion = new Date(updatedAt).getTime();
-    status.textContent = `Actualizado: ${new Intl.DateTimeFormat('es-ES', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(updatedAt))}`;
+    const date = new Date(updatedAt);
+    if (!response.ok || !updatedAt || !Number.isFinite(date.getTime())) throw new Error();
+    captureVersion = date.getTime();
+    const formatted = new Intl.DateTimeFormat('eu-ES', {
+      dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/Madrid',
+    }).format(date);
+    status.textContent = `Azken eguneratzea: ${formatted}`;
     document.querySelectorAll('.capture-card img').forEach((image) => {
       if (image !== surfImage) image.src = versionedUrl(image.getAttribute('src'));
     });
     setSurfForecast(document.querySelector('[data-surf-mode].is-active')?.dataset.surfMode ?? 'hourly');
   } catch {
-    status.textContent = 'Pendiente de la primera actualización';
+    status.textContent = 'Lehen eguneratzearen zain';
   }
 }
 
