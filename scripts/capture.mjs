@@ -200,13 +200,13 @@ async function captureWeatherDaily() {
   const forecast = page.getByTestId('daily-forecast');
   const header = forecast.getByText('Día', { exact: true }).locator('xpath=../..');
   const days = forecast.locator('h3 > button[aria-expanded]');
-  await days.nth(9).waitFor({ state: 'visible' });
+  await days.first().waitFor({ state: 'visible' });
   await setWeatherMetric(days.first().getByText(/\d+\s*km\/h/));
 
-  const lastDay = days.nth(9).locator('xpath=../..');
+  const lastDay = days.last().locator('xpath=../..');
   const headerBox = await header.boundingBox();
   const lastBox = await lastDay.boundingBox();
-  if (!headerBox || !lastBox) throw new Error('No se encontraron los diez días de previsión');
+  if (!headerBox || !lastBox) throw new Error('No se encontró la tabla de previsión diaria');
   const scrollY = await page.evaluate(() => window.scrollY);
   await page.screenshot({
     path: `${captures}/weather-ten-day.png`,
@@ -219,6 +219,7 @@ async function captureWeatherDaily() {
     },
     animations: 'disabled',
   });
+  console.log(`Weather.com: ${await days.count()} días capturados.`);
 }
 
 async function captureCroppedElement(selector, filename, height) {
