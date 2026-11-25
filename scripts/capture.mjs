@@ -2,6 +2,7 @@ import { chromium } from 'playwright';
 import { mkdir, writeFile } from 'node:fs/promises';
 
 const captures = 'assets/captures';
+const weatherUrl = 'https://weather.com/es-ES/es/gipuzkoa/city/san-sebastian';
 const browser = await chromium.launch({ headless: true, channel: 'chromium' });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 });
 await page.setExtraHTTPHeaders({ 'Accept-Language': 'es-ES,es;q=0.9' });
@@ -141,6 +142,85 @@ async function captureSurfForecast(url, filename) {
   });
 }
 
+async function setWeatherMetric(metricReading) {
+  const consent = page.locator('iframe[title="SP Consent Message"]');
+  await consent.waitFor({ state: 'visible', timeout: 4_000 }).catch(() => {});
+  if (await consent.isVisible()) {
+    await consent.contentFrame().getByRole('button', { name: 'Rechazar todo', exact: true }).click();
+  }
+
+  const settings = page.getByTestId('header-settings-button');
+  const metric = page.getByRole('radio', { name: '°C', exact: true });
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      if (!(await metric.isVisible())) await settings.click({ timeout: 8_000 });
+      if ((await metric.getAttribute('aria-checked', { timeout: 5_000 })) !== 'true') {
+        await metric.dispatchEvent('click', {}, { timeout: 5_000 });
+      }
+      await metricReading.waitFor({ state: 'visible', timeout: 12_000 });
+      if (await metric.isVisible()) await settings.click({ timeout: 5_000 });
+      await metric.waitFor({ state: 'hidden', timeout: 5_000 });
+      return;
+    } catch (error) {
+      if (attempt === 3) throw error;
+    }
+  }
+}
+
+async function captureWeatherHourly() {
+  await page.setViewportSize({ width: 3800, height: 1250 });
+  await open(`${weatherUrl}/today`);
+
+  const scroller = page.locator('main [data-scroll-container="true"]').filter({
+    has: page.getByText('Ahora', { exact: true }),
+  }).first();
+  const chart = scroller.locator('..');
+  await chart.waitFor({ state: 'visible' });
+  await setWeatherMetric(page.locator('main').getByText(/\d+\s*km\/h/).first());
+  await chart.evaluate((element) => {
+    const scroll = element.querySelector('[data-scroll-container="true"]');
+    const style = getComputedStyle(scroll);
+    const padding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+    const contentWidth = scroll.firstElementChild.offsetWidth + padding;
+    // Expand the carousel to its native content width for a single panoramic capture.
+    element.style.width = `${contentWidth + element.offsetWidth - element.clientWidth}px`;
+    element.querySelectorAll(':scope > button').forEach((button) => { button.style.display = 'none'; });
+    scroll.scrollLeft = 0;
+  });
+  if (await scroller.evaluate((element) => element.scrollWidth > element.clientWidth + 1)) {
+    throw new Error('Parte de la previsión horaria queda fuera de la captura');
+  }
+  await captureLocator(chart, 'weather-hourly.png');
+}
+
+async function captureWeatherDaily() {
+  await page.setViewportSize({ width: 1400, height: 1250 });
+  await open(`${weatherUrl}/tenday`);
+
+  const forecast = page.getByTestId('daily-forecast');
+  const header = forecast.getByText('Día', { exact: true }).locator('xpath=../..');
+  const days = forecast.locator('h3 > button[aria-expanded]');
+  await days.nth(9).waitFor({ state: 'visible' });
+  await setWeatherMetric(days.first().getByText(/\d+\s*km\/h/));
+
+  const lastDay = days.nth(9).locator('xpath=../..');
+  const headerBox = await header.boundingBox();
+  const lastBox = await lastDay.boundingBox();
+  if (!headerBox || !lastBox) throw new Error('No se encontraron los diez días de previsión');
+  const scrollY = await page.evaluate(() => window.scrollY);
+  await page.screenshot({
+    path: `${captures}/weather-ten-day.png`,
+    fullPage: true,
+    clip: {
+      x: headerBox.x,
+      y: headerBox.y + scrollY,
+      width: headerBox.width,
+      height: lastBox.y + lastBox.height - headerBox.y,
+    },
+    animations: 'disabled',
+  });
+}
+
 async function captureCroppedElement(selector, filename, height) {
   const target = page.locator(selector).first();
   await target.scrollIntoViewIfNeeded();
@@ -174,6 +254,8 @@ try {
   const surfForecast = 'https://es.surf-forecast.com/breaks/Zurriola-hondartza/forecasts/latest';
   await captureSurfForecast(surfForecast, 'surf-hourly.png');
   await captureSurfForecast(`${surfForecast}/six_day`, 'surf-six-day.png');
+  await captureWeatherHourly();
+  await captureWeatherDaily();
 
   await writeFile(`${captures}/status.json`, JSON.stringify({ updatedAt: new Date().toISOString() }));
 } finally {

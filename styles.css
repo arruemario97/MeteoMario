@@ -30,5 +30,5 @@ h3 { font-size: 1rem; margin: 0 0 10px; }
 .surf-switch { display: inline-flex; padding: 3px; border-radius: 999px; background: #e9eef3; box-shadow: inset 0 1px 2px #0002; white-space: nowrap; }
 .surf-switch button { appearance: none; border: 0; border-radius: 999px; padding: 8px 14px; background: transparent; color: #4d6380; font: inherit; font-size: .875rem; cursor: pointer; }
 .surf-switch button.is-active { background: #fff; color: #315fc5; box-shadow: 0 1px 3px #0003; }
-.surf-widget .surf-fc-i { display: block; width: 100%; height: 424px; border: 0; color-scheme: light; }
+.scroll-hint { margin: -4px 2px 10px; color: #9cb4c5; font-size: .875rem; }
 @media (max-width: 620px) { .dashboard { padding-inline: 12px; } .webcam-grid { grid-template-columns: 1fr; } .capture-grid--tides { grid-template-columns: 1fr; } .capture-grid--tides .capture-card:first-child { max-width: 390px; } .section-heading--surf { align-items: flex-start; flex-direction: column; } }
