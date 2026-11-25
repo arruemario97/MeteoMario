@@ -95,47 +95,17 @@ async function captureSurfForecast(url, filename) {
   if (await metric.isVisible()) await unitsButton.click();
   await metric.waitFor({ state: 'hidden' });
 
-  // In its metric preset Surf-Forecast still renders wave and tide heights in metres.
+  // Keep Surf-Forecast's native metre labels and scale in metric mode.
   await table.evaluate((element) => {
-    const swellUnits = element.querySelectorAll('.forecast-table__header-container--swell .heightu');
+    const swellUnit = element.querySelector('.forecast-table__header-container--swell .heightu');
+    const tideUnit = element.querySelector('.tide-time__units');
     const wind = element.querySelector('.forecast-table__header-container--wind');
-    if (!swellUnits.length || swellUnits[0].textContent.trim() !== 'm' || !wind?.textContent.includes('km/h')) {
-      throw new Error('Surf-Forecast did not switch to the metric preset');
-    }
-
-    const toCentimetres = (height) => {
-      const metres = height.textContent.trim().replace(',', '.');
-      if (/^-?\d+(?:\.\d+)?$/.test(metres)) {
-        height.textContent = String(Math.round(Number(metres) * 100));
-      }
-    };
-
-    element.querySelectorAll('.swell-icon__val').forEach(toCentimetres);
-    swellUnits.forEach((unit) => { unit.textContent = 'cm'; });
-    element.querySelectorAll('.tide-time').forEach((tide) => {
-      const height = tide.querySelector('.tide-time__height');
-      const unit = tide.querySelector('.tide-time__units');
-      if (height && unit?.textContent.trim() === 'm') {
-        toCentimetres(height);
-        unit.textContent = ' cm';
-      }
-    });
-
-    // Match the existing graph ticks and express their labels in centimetres.
-    const scale = element.querySelector('.forecast-table__scale');
-    if (scale) {
-      const ticks = [[2, 1000], [23, 500], [35, 300], [43, 200], [52, 100], [75, 0]];
-      const marks = ticks.map(([y]) => `M27 ${y}H32`).join(' ');
-      const labels = ticks.map(([y, cm]) => {
-        const baseline = Math.max(7, Math.min(75, y + 2));
-        return `<text x="25" y="${baseline}">${cm}</text>`;
-      }).join('');
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 76">
-        <path d="M31 2V75 ${marks}" fill="none" stroke="#111"/>
-        <g fill="#111" font-family="sans-serif" font-size="8" text-anchor="end">${labels}</g>
-      </svg>`;
-      scale.src = 'data:image/svg+xml,' + encodeURIComponent(svg);
-      scale.alt = 'Escala de olas en centímetros';
+    if (
+      swellUnit?.textContent.trim() !== 'm' ||
+      (tideUnit && tideUnit.textContent.trim() !== 'm') ||
+      !wind?.textContent.includes('km/h')
+    ) {
+      throw new Error('Surf-Forecast did not render the forecast in metres and km/h');
     }
   });
 
