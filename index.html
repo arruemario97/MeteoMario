@@ -8,7 +8,8 @@
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" type="image/png" sizes="192x192" href="assets/meteomario-icon-192.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="assets/meteomario-icon-180.png" />
-    <link rel="stylesheet" href="styles.css?v=avatar-80" />
+    <link rel="stylesheet" href="https://es.surf-forecast.com/stylesheets/widget.css" />
+    <link rel="stylesheet" href="styles.css?v=surf-widget" />
   </head>
   <body>
     <main class="dashboard">
@@ -42,7 +43,7 @@
         <div class="section-heading"><h2 id="mareas-title">Mareak</h2><span>Donostia</span></div>
         <div class="capture-grid capture-grid--tides">
           <article class="capture-card"><img src="assets/captures/tide-status.png" alt="Marearen uneko egoera" /></article>
-          <article class="capture-card capture-card--wide"><img src="assets/captures/tide-chart.png" alt="Eguneko mareen grafikoa" /></article>
+          <article class="capture-card capture-card--wide"><img src="assets/captures/tide-chart.png" alt="Eguneko mareen grafikoa sareta batekin" /></article>
           <article class="capture-card capture-card--wide"><img src="assets/captures/tide-coefficient.png" alt="Marea-koefizientea" /></article>
         </div>
       </section>
@@ -61,6 +62,30 @@
           </div>
         </div>
         <article class="capture-card capture-card--scroll"><img id="surf-forecast-image" src="assets/captures/surf-hourly.png" data-hourly="assets/captures/surf-hourly.png" data-six-day="assets/captures/surf-six-day.png" alt="Zurriolako orduz orduko surf-iragarpena" /></article>
+      </section>
+
+      <section id="surf-widget" class="surf-widget" aria-labelledby="surf-widget-title">
+        <div class="section-heading"><h2 id="surf-widget-title">Surf-Forecast widgeta</h2><span>Zurriola</span></div>
+        <div class="wf-width-cont surf-fc-widget widget-centered">
+          <div class="widget-container">
+            <div class="external-cont">
+              <iframe
+                class="surf-fc-i"
+                src="https://es.surf-forecast.com/breaks/Zurriola-hondartza/forecasts/widget/m"
+                title="Zurriolako surf-iragarpena, Surf-Forecast"
+                loading="lazy"
+              ></iframe>
+              <div class="footer">
+                <a class="logo" href="https://es.surf-forecast.com/" aria-label="Surf-Forecast">
+                  <img src="https://www.surf-forecast.com/images/widget.png" width="1" height="1" alt="" loading="lazy" />
+                </a>
+                <div class="about" id="cmt">
+                  Ikusi <a href="https://es.surf-forecast.com/breaks/Zurriola-hondartza">Zurriolako surf-iragarpen osoa</a> Surf-Forecast-en.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>

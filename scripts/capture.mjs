@@ -34,6 +34,19 @@ async function captureLocator(target, filename) {
   await target.screenshot({ path: `${captures}/${filename}`, animations: 'disabled' });
 }
 
+async function captureTideChart() {
+  const chart = page.locator('#l_grafico_mareas').locator('..');
+  const grid = chart.locator('#grid_mareas');
+  await chart.waitFor({ state: 'visible' });
+  if (!(await grid.isVisible())) {
+    await page.waitForFunction(() => typeof gm !== 'undefined' && typeof gm.MostrarEsconderGrid === 'function');
+    await chart.dispatchEvent('click');
+  }
+  await grid.waitFor({ state: 'visible' });
+  await grid.locator('img').evaluate((image) => image.decode());
+  await captureLocator(chart, 'tide-chart.png');
+}
+
 async function captureClip(selector, filename, height) {
   const box = await page.locator(selector).first().boundingBox();
   if (!box) throw new Error(`No se pudo ver el bloque ${selector}`);
@@ -150,7 +163,7 @@ try {
   await page.setViewportSize({ width: 1200, height: 1000 });
   await open('https://tablademareas.com/es/guipuzcoa/san-sebastian');
   await capturePadded('#l_brujula_mareas >> xpath=..', 'tide-status.png', { top: 26, right: 0, bottom: 18, left: 22 });
-  await capture('#l_grafico_mareas >> xpath=..', 'tide-chart.png');
+  await captureTideChart();
   await captureLocator(page.locator('.grafico_estado_actual_fondo').filter({ hasText: 'coeficiente de mareas' }).first(), 'tide-coefficient.png');
 
   await page.setViewportSize({ width: 3300, height: 1200 });
